@@ -42,7 +42,8 @@ g AS (
 SELECT quarter,
        ROUND(AVG(100.0 * (txns - prev) / prev), 1) AS avg_qoq_growth_pct
 FROM g
-WHERE prev IS NOT NULL
+-- WHERE prev IS NOT NULL
+WHERE prev IS NOT NULL AND year >= 2023
 GROUP BY quarter
 ORDER BY quarter;
 
@@ -56,7 +57,7 @@ GROUP BY txn_type
 ORDER BY total_txns DESC;
 
 
--- Q4b: Transaction type share by year (2018-2025)
+
 SELECT year, txn_type,
        ROUND(100.0 * SUM(txn_count) / SUM(SUM(txn_count)) OVER (PARTITION BY year), 1) AS share_pct
 FROM agg_transaction
@@ -145,6 +146,16 @@ SELECT year, txns,
 FROM h1
 ORDER BY year;
 
+
+
+-- Q11: Average ticket size by year (2018-2025)
+SELECT year,
+       SUM(txn_count) AS txns,
+       ROUND(SUM(txn_amount)::numeric / SUM(txn_count), 0) AS avg_ticket_rs
+FROM map_transaction
+WHERE year < 2026
+GROUP BY year
+ORDER BY year;
 
 -- Validation: do both tables give the same total transaction count?
 SELECT (SELECT SUM(txn_count) FROM agg_transaction) AS agg_total,
