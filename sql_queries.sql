@@ -27,7 +27,7 @@ FROM yearly
 ORDER BY year;
 
 
--- Q3: Quarter-on-quarter growth, 2022-2025 (seasonality check)
+-- Q3: Avg quarter-on-quarter growth, 2023-2025 (seasonality check)
 WITH q AS (
     SELECT year, quarter, SUM(txn_count)::numeric AS txns
     FROM map_transaction
@@ -42,7 +42,7 @@ g AS (
 SELECT quarter,
        ROUND(AVG(100.0 * (txns - prev) / prev), 1) AS avg_qoq_growth_pct
 FROM g
--- WHERE prev IS NOT NULL
+
 WHERE prev IS NOT NULL AND year >= 2023
 GROUP BY quarter
 ORDER BY quarter;
@@ -56,7 +56,7 @@ FROM agg_transaction
 GROUP BY txn_type
 ORDER BY total_txns DESC;
 
-
+Q4b: Transaction type share by year (2018-2025)
 
 SELECT year, txn_type,
        ROUND(100.0 * SUM(txn_count) / SUM(SUM(txn_count)) OVER (PARTITION BY year), 1) AS share_pct
